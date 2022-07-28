@@ -161,6 +161,9 @@ function createEvent(entry){
     if (entry[12] != '#NUM!'){
       remaining = '\n Remaining Days:'+entry[12]+' days';
     }
+    else{
+      remaining = '\n EXPIRED!!' ;
+    }
     
    if (entry[9] == 'PROSES'){
       var result = myCalendar.createEvent(entry[2]+':'+entry[0],date_entry,date_entry,
