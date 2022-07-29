@@ -313,7 +313,7 @@ function replaceTrigger(handlerName) {
   .forSpreadsheet(sheet)
   .onChange()
   .create();
-  console.log('Create New Triger:'+handlerName+' ...@'+(new Date()));
+  console.log('Create New Triger: '+handlerName+' ...@'+(new Date()));
 }
 
 function replaceTriggerTime(handlerName2) {
@@ -332,7 +332,7 @@ function replaceTriggerTime(handlerName2) {
 
     let myCalendar =  CalendarApp.getCalendarById(calendar_id);
     var calendarTimeZone = myCalendar.getTimeZone();
-   console.log('Create Update Event Trigger:'+handlerName2+'...in Time Zone: '+calendarTimeZone+' @'+(new Date()));
+   console.log('Create New Trigger: '+handlerName2+'...in Time Zone: '+calendarTimeZone+' @'+(new Date()));
 }
 
 
