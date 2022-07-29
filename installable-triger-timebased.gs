@@ -2,17 +2,17 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = 'vlp4bpcfn1hvh0kb3k23945d5c@group.calendar.google.com';
+var calendar_id = 'tpf5jv9h0adlsbc0n3rmkhkau4@group.calendar.google.com';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
-var update_time = 15 ;
+var update_time = 2 ;
 
 // menitnya
-var update_time_minutes = 15; 
+var update_time_minutes = 32; 
 
 // tentukan jenis update kalender. Kalo di set = 1, bakal kurangin 1; kalo di set 0 , bakal ngasih jumlah
 // selisih persis due_date dengan hari ini 
-var trial_update = 1;
+var trial_update = 0;
 
 
 
@@ -158,17 +158,21 @@ function createEvent(entry){
     }
 
     var remaining = ''; 
-    if (entry[12] != '#NUM!'){
-      remaining = '\n Remaining Days:'+entry[12]+' days';
+    if (!isNaN(entry[12]) ){
+      remaining = '\n Remaining Days:'+entry[12]+'.';
     }
     else{
-      remaining = '\n EXPIRED!!' ;
+      remaining = '\n Remaining Days: EXPIRED .';
     }
+
+    // https://developers.google.com/google-ads/scripts/docs/features/dates
+    var date_string  = Utilities.formatDate(date_entry, 'Asia/Jakarta', 'yyyy-MM-dd');
+
     
    if (entry[9] == 'PROSES'){
       var result = myCalendar.createEvent(entry[2]+':'+entry[0],date_entry,date_entry,
               {description: ' Product:'+entry[0]+' \n Due date: <span style="color:'+icolor+';"> '
-              +date_entry+'</span> \n SPK:'+entry[2]+ '\n Merek:'+entry[10]+'\n STATUS:'+entry[9]   
+              +date_string+'</span> \n SPK:'+entry[2]+ '\n Merek:'+entry[10]+'\n STATUS:'+entry[9]   
               +remaining,     
               color:icolor}
               ).setColor(icolor);
@@ -216,36 +220,50 @@ function updateEvent(e){
                       for ( var i in events ) {
                         var id = events[i].getId();
                         var desc = events[i].getDescription();
-                      // console.log('Desc:'+desc);
+                        // console.log('Desc:'+desc);
 
-
+                        var rdif = datediff(entry[6]);  
                         
-                        if (desc.includes('Remaining Days:')){
+                        if (rdif >= 0){
                             var remaining = '';
                             var icolor = 10;
                             var splitdesc = desc.split('Remaining Days:');
                             var mystring = splitdesc[1];
+                                mystring = mystring.trim();
 
-                            splitText = mystring.split(' days');
+                            splitText = mystring.split('.');
                             mystring = splitText[0];
                             
-
+                            if (mystring == 'EXPIRED'){
+                              mystring = 0;
+                            }
                            
 
                             var rdays = parseInt(mystring);
                              console.log('R days semula:'+rdays);
-                            if (rdays > 0){
+                    
                               if(trial_update == 1){
-                                rdays = rdays - 1;
+                                if (rdays >= 0){
+                                  rdays = rdays - 1;
+                                }
+                                
                               } else {
-                                rdays = datediff(entry[6]);  
+                                rdays = rdif;  
                               }
+
+                              
                               
                               if (rdays < 14) { icolor = 5;}
                               if (rdays < 8) {icolor = 11;}
+                              if (rdays < 0){
+                                  rdays = 'EXPIRED';
+                                 
+                              }
+                             
 
-                              remaining = 'Remaining Days:'+rdays ;
-                            } 
+
+                              remaining = 'Remaining Days:'+rdays+'.'; ;
+                            
 
                             var newdesc = splitdesc[0]+remaining;
 
@@ -253,7 +271,7 @@ function updateEvent(e){
                             .setDescription(newdesc).setColor(icolor);
                             console.log('Event Updated!');
                           }
-                        }
+                       }
 
                    }
                 Utilities.sleep(100);   
