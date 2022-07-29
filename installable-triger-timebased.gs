@@ -15,6 +15,21 @@ var update_time_minutes = 32;
 var trial_update = 0;
 
 
+// Dari GSheet, tentukan di kolom nomor berapa (0,1,2,..dst) nilai-nilai ini berada:
+var col_due_date = 6 ; //  kolom di mana nilai due date berada di GSheet
+var col_spk = 2 ; // kolom di mana nilai spk berada di Gsheet
+var col_set = 13 ; // letak kolom yang nilainya bisa 'SET', 'Y' atau 'N' 
+var col_product = 0 ; // letak kolom di mana nilai nama produk berada 
+var col_color = 1 ; // letak kolom di mana nilai color/warna berada
+var col_status = 9 ; // letak di mana nilai status berada
+var col_merek = 10 ; // letak di mana nilai merek berada
+var col_remaining = 12 ; // letak di mana nilai remaining days berada
+
+var run_row = 2 ; // posisi baris di mana nilai setting  Run berada;
+var run_col = 15 ; // posisi baris di mana nilai setting  Run berada;
+
+var auto_row = 2 ; // posisi baris di mana nilai setting Auto berada;
+var auto_col = 16 ;  // posisi baris di mana nilai setting  Auto berada;
 
 function myFunction(e){
   
@@ -23,10 +38,10 @@ function myFunction(e){
 
   let sheet = SpreadsheetApp.getActiveSheet();
 
-  var setting_range = sheet.getRange(2,16);
+  var setting_range = sheet.getRange(auto_row,auto_col);
   var setting_auto = setting_range.getValue();
 
-  var setting_range = sheet.getRange(2,15);
+  var setting_range = sheet.getRange(run_row,run_col);
   var setting_value = setting_range.getValue();
 
   if (setting_value != '1'){
@@ -48,17 +63,17 @@ function myFunction(e){
         schedule.splice(6,1);
 
         schedule.forEach(function(entry){
-              var date_entry = new Date(entry[6]);
-              var last_set = entry[13];
+              var date_entry = new Date(entry[col_due_date]);
+              var last_set = entry[col_set];
               var entry_row = 0;
 
               if (last_set != ''){
                   if (last_set != 'SET'){
-                    entry_row = findRow(entry[2]) ;
+                    entry_row = findRow(entry[col_spk]) ;
                       var xset_range = sheet.getRange(entry_row,14);
                   
                     if (last_set == 'Y'){
-                        deleteEventbySPK(date_entry,'SPK:'+entry[2]);
+                        deleteEventbySPK(date_entry,'SPK:'+entry[col_spk]);
 
                         var gocreate = createEvent(entry);
                         //Ubah ke SET jika berhasil
@@ -68,7 +83,7 @@ function myFunction(e){
 
                     }
                     else if (last_set == 'N'){
-                        deleteEventbySPK(date_entry,'SPK:'+entry[2]);
+                        deleteEventbySPK(date_entry,'SPK:'+entry[col_spk]);
                           //Ubah ke kosong
                         xset_range.setValue("");
                     }
@@ -96,7 +111,7 @@ function manualExe(sheet){
   var values = icell.getValues();
 
   var entry = sheet.getRange(irow,1,1,17).getValues();
-  entry = entry[0];
+  entry = entry[col_product];
   //var values = icell.getValues();
 
   var duedate = values[0][0] ;
@@ -145,8 +160,8 @@ function manualExe(sheet){
 
 function createEvent(entry){
    let myCalendar =  CalendarApp.getCalendarById(calendar_id);
-  var date_entry = new Date(entry[6]);
-  var icolor = entry[1];
+  var date_entry = new Date(entry[col_due_date]);
+  var icolor = entry[col_color];
     if (icolor == 'Red'){
         icolor = 11;
     } else if(icolor == 'Green')
@@ -158,8 +173,8 @@ function createEvent(entry){
     }
 
     var remaining = ''; 
-    if (!isNaN(entry[12]) ){
-      remaining = '\n Remaining Days:'+entry[12]+'.';
+    if (!isNaN(entry[col_remaining]) ){
+      remaining = '\n Remaining Days:'+entry[col_remaining]+'.';
     }
     else{
       remaining = '\n Remaining Days: EXPIRED .';
@@ -169,10 +184,10 @@ function createEvent(entry){
     var date_string  = Utilities.formatDate(date_entry, 'Asia/Jakarta', 'yyyy-MM-dd');
 
     
-   if (entry[9] == 'PROSES'){
-      var result = myCalendar.createEvent(entry[2]+':'+entry[0],date_entry,date_entry,
-              {description: ' Product:'+entry[0]+' \n Due date: <span style="color:'+icolor+';"> '
-              +date_string+'</span> \n SPK:'+entry[2]+ '\n Merek:'+entry[10]+'\n STATUS:'+entry[9]   
+   if (entry[col_status] == 'PROSES'){
+      var result = myCalendar.createEvent(entry[col_spk]+':'+entry[col_product],date_entry,date_entry,
+              {description: ' Product:'+entry[col_product]+' \n Due date: <span style="color:'+icolor+';"> '
+              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+'\n STATUS:'+entry[col_status]   
               +remaining,     
               color:icolor}
               ).setColor(icolor);
@@ -208,8 +223,8 @@ function updateEvent(e){
         schedule.splice(6,1);
 
         schedule.forEach(function(entry){
-              var dentry = new Date(entry[6]);
-              var last_set = entry[13];
+              var dentry = new Date(entry[col_due_date]);
+              var last_set = entry[col_set];
               var entry_row = 0;
 
               if (last_set != ''){
@@ -222,7 +237,7 @@ function updateEvent(e){
                         var desc = events[i].getDescription();
                         // console.log('Desc:'+desc);
 
-                        var rdif = datediff(entry[6]);  
+                        var rdif = datediff(entry[col_due_date]);  
                         
                         if (rdif >= 0){
                             var remaining = '';
