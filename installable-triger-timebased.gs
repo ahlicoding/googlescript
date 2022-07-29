@@ -31,7 +31,7 @@ var run_col = 15 ; // posisi baris di mana nilai setting  Run berada;
 var auto_row = 2 ; // posisi baris di mana nilai setting Auto berada;
 var auto_col = 16 ;  // posisi baris di mana nilai setting  Auto berada;
 
-function myFunction(e){
+function calendarEvent(e){
   
   let myCalendar =  CalendarApp.getCalendarById(calendar_id);
   var dentry = new Date();
@@ -313,7 +313,7 @@ function replaceTrigger(handlerName) {
   .forSpreadsheet(sheet)
   .onChange()
   .create();
-  console.log('Create New Triger:...@'+(new Date()));
+  console.log('Create New Triger:'+handlerName+' ...@'+(new Date()));
 }
 
 function replaceTriggerTime(handlerName2) {
@@ -332,13 +332,13 @@ function replaceTriggerTime(handlerName2) {
 
     let myCalendar =  CalendarApp.getCalendarById(calendar_id);
     var calendarTimeZone = myCalendar.getTimeZone();
-   console.log('Create Update Event Trigger:...in Time Zone: '+calendarTimeZone+' @'+(new Date()));
+   console.log('Create Update Event Trigger:'+handlerName2+'...in Time Zone: '+calendarTimeZone+' @'+(new Date()));
 }
 
 
 
 function main(){
-  replaceTrigger('myFunction')
+  replaceTrigger('calendarEvent')
   replaceTriggerTime('updateEvent')
 }
 
