@@ -2,13 +2,13 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = 'tpf5jv9h0adlsbc0n3rmkhkau4@group.calendar.google.com';
+var calendar_id = '{Calendar ID Anda}';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
-var update_time = 2 ;
+var update_time = 9 ;
 
 // menitnya
-var update_time_minutes = 32; 
+var update_time_minutes = 45; 
 
 // tentukan jenis update kalender. Kalo di set = 1, bakal kurangin 1; kalo di set 0 , bakal ngasih jumlah
 // selisih persis due_date dengan hari ini 
@@ -18,31 +18,50 @@ var trial_update = 0;
 // Dari GSheet, tentukan di kolom nomor berapa (0,1,2,..dst) nilai-nilai ini berada:
 var col_due_date = 6 ; //  kolom di mana nilai due date berada di GSheet
 var col_spk = 2 ; // kolom di mana nilai spk berada di Gsheet
-var col_set = 13 ; // letak kolom yang nilainya bisa 'SET', 'Y' atau 'N' 
+var col_set = 12 ; // letak kolom yang nilainya bisa 'SET', 'Y' atau 'N' 
 var col_product = 0 ; // letak kolom di mana nilai nama produk berada 
 var col_color = 1 ; // letak kolom di mana nilai color/warna berada
-var col_status = 9 ; // letak di mana nilai status berada
-var col_merek = 10 ; // letak di mana nilai merek berada
-var col_remaining = 12 ; // letak di mana nilai remaining days berada
+var col_status = 8 ; // letak di mana nilai status berada
+var col_merek = 9 ; // letak di mana nilai merek berada
+var col_remaining = 11 ; // letak di mana nilai remaining days berada
 
 var run_row = 2 ; // posisi baris di mana nilai setting  Run berada;
-var run_col = 15 ; // posisi baris di mana nilai setting  Run berada;
+var run_col = 13 ; // posisi baris di mana nilai setting  Run berada;
+
 
 var auto_row = 2 ; // posisi baris di mana nilai setting Auto berada;
-var auto_col = 16 ;  // posisi baris di mana nilai setting  Auto berada;
+var auto_col = 14 ;  // posisi baris di mana nilai setting  Auto berada;
+
+
 
 function calendarEvent(e){
-  
+ 
   let myCalendar =  CalendarApp.getCalendarById(calendar_id);
   var dentry = new Date();
 
   let sheet = SpreadsheetApp.getActiveSheet();
 
-  var setting_range = sheet.getRange(auto_row,auto_col);
+  var str = 'Proces Calendar ... ';
+
+  // kalo getRange untuk kolom harus selalu ditambah 1 (hitungan mulai dari 1)
+  var setting_range = sheet.getRange(auto_row,auto_col+1);
   var setting_auto = setting_range.getValue();
 
-  var setting_range = sheet.getRange(run_row,run_col);
+  if (setting_auto == 1)
+  str += 'AUTO..';
+  else
+  str += 'MANUAL..';
+
+  var setting_range = sheet.getRange(run_row,run_col+1);
   var setting_value = setting_range.getValue();
+
+  if (setting_value == 1)
+  str += ', RUN..'+setting_value;
+  else
+  str += ' , STOP..:' +setting_value;
+
+  console.log(str);
+
 
   if (setting_value != '1'){
     return ;
@@ -70,7 +89,7 @@ function calendarEvent(e){
               if (last_set != ''){
                   if (last_set != 'SET'){
                     entry_row = findRow(entry[col_spk]) ;
-                      var xset_range = sheet.getRange(entry_row,14);
+                      var xset_range = sheet.getRange(entry_row,col_set+1);
                   
                     if (last_set == 'Y'){
                         deleteEventbySPK(date_entry,'SPK:'+entry[col_spk]);
@@ -386,7 +405,4 @@ function datediff(dentry){
 
     return (diffInDays*-1);
 }
-
-
-
 
