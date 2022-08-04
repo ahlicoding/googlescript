@@ -2,7 +2,7 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = '{Calendar ID Anda}';
+var calendar_id = 'gjhekf038l38llo7oqipqsp6lo@group.calendar.google.com';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
 var update_time = 9 ;
@@ -142,18 +142,11 @@ function manualExe(sheet){
       spk_value = spk_value[0][0];
 
 
-
-
-     // console.log('irow:' + irow);
-   // console.log('duedate' + duedate);
-   // console.log('No SPK:'+spk_value);
-   // console.log('Set value'+set_value);
-
     // Jika SET di-skip, jika N dihapus, jika Y akan di-create Event, lalu setelah selesai akan diubah ke SET
 
  if (set_value != ''){
       if (set_value != 'SET'){
-              if (set_value == 'Y'){
+            if (set_value == 'Y'){
             deleteEventbySPK(duedate,'SPK:'+spk_value);
             var gocreate = createEvent(entry);
           
@@ -168,7 +161,7 @@ function manualExe(sheet){
           deleteEventbySPK(duedate,'SPK:'+spk_value);
           set_range.setValue("");
           return ;
-   }
+        }
 
     }
  }
@@ -181,11 +174,16 @@ function manualExe(sheet){
 
 function createEvent(entry){
    let myCalendar =  CalendarApp.getCalendarById(calendar_id);
+
   var date_entry = new Date(entry[col_due_date]);
-  var icolor = entry[col_color];
-    if (icolor == 'Red'){
+  var date_end = new Date();
+   date_end.setDate(date_entry.getDate()+1);
+
+  var icolor = 0;
+  var string_color = entry[col_color];
+    if (string_color == 'Red'){
         icolor = 11;
-    } else if(icolor == 'Green')
+    } else if(string_color == 'Green')
     {
       icolor = 10;
     }
@@ -193,25 +191,53 @@ function createEvent(entry){
       icolor = 5;
     }
 
+    string_color = string_color.toLowerCase();
+
     var remaining = ''; 
     if (!isNaN(entry[col_remaining]) ){
-      remaining = '\n Remaining Days:'+entry[col_remaining]+'.';
+      remaining = '\n Sisa Hari:'+entry[col_remaining]+'.';
     }
     else{
-      remaining = '\n Remaining Days: EXPIRED .';
+      remaining = '\n Sisa Hari: EXPIRED .';
     }
 
     // https://developers.google.com/google-ads/scripts/docs/features/dates
     var date_string  = Utilities.formatDate(date_entry, 'Asia/Jakarta', 'yyyy-MM-dd');
+    var tomorrow_string  = Utilities.formatDate(date_end, 'Asia/Jakarta', 'yyyy-MM-dd');
+      
 
     
    if (entry[col_status] == 'PROSES'){
+     var title = entry[col_spk]+':'+entry[col_product] ;
+     var startDate = date_entry ;
+     var endDate = date_end ;
+     var options = {description: 
+     ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
+              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
+              '\n Status:'+entry[col_status]   
+              +remaining};
+
+
+     var event = myCalendar.createAllDayEvent(title,
+    new Date(date_string),
+    new Date(tomorrow_string),
+    {description:  ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
+              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
+              '\n Status:'+entry[col_status]   
+              +remaining }).setColor(icolor);
+Logger.log('Event ID: ' + event.getId());
+
+
+
+    // var result = myCalendar.createAllDayEvent(title, startDate, endDate, options) ;
+     /*
       var result = myCalendar.createEvent(entry[col_spk]+':'+entry[col_product],date_entry,date_entry,
               {description: ' Product:'+entry[col_product]+' \n Due date: <span style="color:'+icolor+';"> '
               +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+'\n STATUS:'+entry[col_status]   
               +remaining,     
               color:icolor}
               ).setColor(icolor);
+              */
       return 1 ;        
    }
     return 0 ;            
@@ -220,17 +246,35 @@ function createEvent(entry){
 
 function deleteEventbySPK(dentry,spk){
   let myCalendar =  CalendarApp.getCalendarById(calendar_id);
+   
    var events = myCalendar.getEventsForDay(dentry);
-      for ( var i in events ) {
-        var id = events[i].getId();
-        var desc = events[i].getDescription();
-       // console.log('Desc:'+desc);
+    var date_entry = new Date(dentry);
+    var date_end = new Date(date_entry.setDate(date_entry.getDate()+1));
+
+   if(events){
+    // var events = myCalendar.getEvents(date_entry,date_end);
+    
+    var stop = 0 ;
+        for ( var i in events ) {
         
-        if (desc.includes(spk)){
-             myCalendar.getEventById(id).deleteEvent(); 
-             console.log('Event Deleted!');
+              var id = events[i].getId();
+              var desc = events[i].getDescription();
+              console.log('Desc:'+desc);
+              
+              if (desc.includes(spk)){
+                  myCalendar.getEventById(id).deleteEvent(); 
+                  console.log('Event Deleted!');
+                  return 1;
+              }
+          
+        
         }
-      }
+        return 1 ;
+   } else {
+     console.log('Cannot delete!');
+   }
+   
+
 }
 
 
@@ -263,7 +307,7 @@ function updateEvent(e){
                         if (rdif >= 0){
                             var remaining = '';
                             var icolor = 10;
-                            var splitdesc = desc.split('Remaining Days:');
+                            var splitdesc = desc.split('Sisa Hari:');
                             var mystring = splitdesc[1];
                                 mystring = mystring.trim();
 
@@ -298,7 +342,7 @@ function updateEvent(e){
                              
 
 
-                              remaining = 'Remaining Days:'+rdays+'.'; ;
+                              remaining = 'Sisa Hari:'+rdays+'.'; ;
                             
 
                             var newdesc = splitdesc[0]+remaining;
@@ -358,7 +402,7 @@ function replaceTriggerTime(handlerName2) {
 
 
 
-function main(){
+function doGet(){
   replaceTrigger('calendarEvent')
   replaceTriggerTime('updateEvent')
 }
