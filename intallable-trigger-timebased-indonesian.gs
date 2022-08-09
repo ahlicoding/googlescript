@@ -198,7 +198,7 @@ function createEvent(entry){
       remaining = '\n Sisa Hari:'+entry[col_remaining]+'.';
     }
     else{
-      remaining = '\n Sisa Hari: EXPIRED .';
+      remaining = '\n Sisa Hari: EXPIRED.';
     }
 
     // https://developers.google.com/google-ads/scripts/docs/features/dates
@@ -213,9 +213,9 @@ function createEvent(entry){
      var endDate = date_end ;
      var options = {description: 
      ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
-              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
+              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n <b>Merek:'+entry[col_merek]+'</b>'+
               '\n Status:'+entry[col_status]   
-              +remaining};
+              +'<b>'+remaining+'</b>'};
 
 
      var event = myCalendar.createAllDayEvent(title,
@@ -342,7 +342,7 @@ function updateEvent(e){
                              
 
 
-                              remaining = 'Sisa Hari:'+rdays+'.'; ;
+                              remaining = 'Sisa Hari:'+rdays+'. </b>'; 
                             
 
                             var newdesc = splitdesc[0]+remaining;
