@@ -2,7 +2,7 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = 'gjhekf038l38llo7oqipqsp6lo@group.calendar.google.com';
+var calendar_id = 'qi8kutbngeh1ct9d93oohn5q1k@group.calendar.google.com';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
 var update_time = 9 ;
@@ -195,10 +195,10 @@ function createEvent(entry){
 
     var remaining = ''; 
     if (!isNaN(entry[col_remaining]) ){
-      remaining = '\n Sisa Hari:'+entry[col_remaining]+'.';
+      remaining = '\n <b> Sisa Hari:'+entry[col_remaining]+'.</b>';
     }
     else{
-      remaining = '\n Sisa Hari: EXPIRED.';
+      remaining = '\n <b> Sisa Hari: EXPIRED. </b>';
     }
 
     // https://developers.google.com/google-ads/scripts/docs/features/dates
@@ -221,12 +221,12 @@ function createEvent(entry){
      var event = myCalendar.createAllDayEvent(title,
     new Date(date_string),
     new Date(tomorrow_string),
-    {description:  ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
+    {description:  '<b> Produk:'+entry[col_product]+' </b> \n Tengat Waktu: <span style="color:'+
+              string_color+';"> '
               +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
               '\n Status:'+entry[col_status]   
-              +remaining }).setColor(icolor);
+              +'<b>'+remaining+'</b>' }).setColor(icolor);
 Logger.log('Event ID: ' + event.getId());
-
 
 
     // var result = myCalendar.createAllDayEvent(title, startDate, endDate, options) ;
