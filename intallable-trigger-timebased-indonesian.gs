@@ -2,7 +2,7 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = 'qi8kutbngeh1ct9d93oohn5q1k@group.calendar.google.com';
+var calendar_id = 'chhi6rim67pd7tn6edjkttb790@group.calendar.google.com';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
 var update_time = 9 ;
@@ -176,8 +176,10 @@ function createEvent(entry){
    let myCalendar =  CalendarApp.getCalendarById(calendar_id);
 
   var date_entry = new Date(entry[col_due_date]);
-  var date_end = new Date();
-   date_end.setDate(date_entry.getDate()+1);
+  var nowInMS = date_entry.getTime(); // 1562300592245
+  var add = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  var twelveHoursLater = nowInMS + add; // 1562343792245
+  var date_end = new Date(twelveHoursLater);
 
   var icolor = 0;
   var string_color = entry[col_color];
@@ -210,7 +212,11 @@ function createEvent(entry){
    if (entry[col_status] == 'PROSES'){
      var title = entry[col_spk]+':'+entry[col_product] ;
      var startDate = date_entry ;
-     var endDate = date_end ;
+      var nowInMS = date_entry.getTime(); // 1562300592245
+      var add = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      var twelveHoursLater = nowInMS + add; // 1562343792245
+      var date_end = new Date(twelveHoursLater);
+
      var options = {description: 
      ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
               +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n <b>Merek:'+entry[col_merek]+'</b>'+
@@ -249,7 +255,10 @@ function deleteEventbySPK(dentry,spk){
    
    var events = myCalendar.getEventsForDay(dentry);
     var date_entry = new Date(dentry);
-    var date_end = new Date(date_entry.setDate(date_entry.getDate()+1));
+    var nowInMS = date_entry.getTime(); // 1562300592245
+    var add = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    var twelveHoursLater = nowInMS + add; // 1562343792245
+    var date_end = new Date(twelveHoursLater);
 
    if(events){
     // var events = myCalendar.getEvents(date_entry,date_end);
