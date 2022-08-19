@@ -2,13 +2,13 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = 'chhi6rim67pd7tn6edjkttb790@group.calendar.google.com';
+var calendar_id = 'nmr0h6vtpidf2ovg901r86i5o0@group.calendar.google.com';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
-var update_time = 9 ;
+var update_time = 1 ;
 
 // menitnya
-var update_time_minutes = 45; 
+var update_time_minutes = 30; 
 
 // tentukan jenis update kalender. Kalo di set = 1, bakal kurangin 1; kalo di set 0 , bakal ngasih jumlah
 // selisih persis due_date dengan hari ini 
@@ -253,35 +253,51 @@ Logger.log('Event ID: ' + event.getId());
 function deleteEventbySPK(dentry,spk){
   let myCalendar =  CalendarApp.getCalendarById(calendar_id);
    
-   var events = myCalendar.getEventsForDay(dentry);
+   
     var date_entry = new Date(dentry);
     var nowInMS = date_entry.getTime(); // 1562300592245
     var add = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     var twelveHoursLater = nowInMS + add; // 1562343792245
     var date_end = new Date(twelveHoursLater);
+    // var events = myCalendar.getEventsForDay(dentry);
+    console.log('Delete Date Begin: '+date_entry);
+    console.log('Delete Date End: '+ date_end);
+
+    if((date_entry == null) || (date_end == null)){
+      console.log('No Event to delete');
+      return 0;
+    }
+
+    try{
+    var events = myCalendar.getEvents(date_entry,date_end);
 
    if(events){
-    // var events = myCalendar.getEvents(date_entry,date_end);
+    
     
     var stop = 0 ;
         for ( var i in events ) {
         
               var id = events[i].getId();
               var desc = events[i].getDescription();
-              console.log('Desc:'+desc);
               
               if (desc.includes(spk)){
                   myCalendar.getEventById(id).deleteEvent(); 
-                  console.log('Event Deleted!');
+                  console.log('This Event is Deleted: \n');
+                  console.log('Desc:'+desc);
                   return 1;
               }
-          
-        
+
         }
-        return 1 ;
-   } else {
-     console.log('Cannot delete!');
-   }
+            return 1 ;
+        } else {
+          console.log('Cannot delete!');
+        }
+    }
+    catch(e){
+      console.error('Error found: '+e);
+    }
+
+   
    
 
 }
