@@ -217,41 +217,30 @@ function createEvent(entry){
       var twelveHoursLater = nowInMS + add; // 1562343792245
       var date_end = new Date(twelveHoursLater);
 
-     var options = {description: 
-     ' Produk:'+entry[col_product]+' \n Tengat Waktu: <span style="color:'+string_color+';"> '
-              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n <b>Merek:'+entry[col_merek]+'</b>'+
-              '\n Status:'+entry[col_status]   
-              +'<b>'+remaining+'</b>'};
-
-
-     var event = myCalendar.createAllDayEvent(title,
+    try{
+        var event = myCalendar.createAllDayEvent(title,
     new Date(date_string),
     new Date(tomorrow_string),
-    {description:  '<b> Produk:'+entry[col_product]+' </b> \n Tengat Waktu: <span style="color:'+
-              string_color+';"> '
-              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
-              '\n Status:'+entry[col_status]   
-              +'<b>'+remaining+'</b>' }).setColor(icolor);
-Logger.log('Event ID: ' + event.getId());
+          {description:  '<b> Produk:'+entry[col_product]+' </b> \n Tengat Waktu: <span style="color:'+
+                    string_color+';"> '
+                    +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+
+                    '\n Status:'+entry[col_status]   
+                    +'<b>'+remaining+'</b>' }).setColor(icolor);
+      Logger.log('Event ID: ' + event.getId());
+      return 1 ;
+    }
+    catch(e){
+      console.log('Error catched: DATE NOT FOUND -'+e);
+    }
 
-
-    // var result = myCalendar.createAllDayEvent(title, startDate, endDate, options) ;
-     /*
-      var result = myCalendar.createEvent(entry[col_spk]+':'+entry[col_product],date_entry,date_entry,
-              {description: ' Product:'+entry[col_product]+' \n Due date: <span style="color:'+icolor+';"> '
-              +date_string+'</span> \n SPK:'+entry[col_spk]+ '\n Merek:'+entry[col_merek]+'\n STATUS:'+entry[col_status]   
-              +remaining,     
-              color:icolor}
-              ).setColor(icolor);
-              */
-      return 1 ;        
+   // PROCESS    
    }
     return 0 ;            
 }
                       
 
 function deleteEventbySPK(dentry,spk){
-  let myCalendar =  CalendarApp.getCalendarById(calendar_id);
+  var myCalendar =  CalendarApp.getCalendarById(calendar_id);
    
    
     var date_entry = new Date(dentry);
@@ -271,7 +260,7 @@ function deleteEventbySPK(dentry,spk){
     try{
     var events = myCalendar.getEvents(date_entry,date_end);
 
-   if(events){
+   if(events != null){
     
     
     var stop = 0 ;
@@ -282,8 +271,7 @@ function deleteEventbySPK(dentry,spk){
               
               if (desc.includes(spk)){
                   myCalendar.getEventById(id).deleteEvent(); 
-                  console.log('This Event is Deleted: \n');
-                  console.log('Desc:'+desc);
+                  console.log('This Event is Deleted: \n' + desc);
                   return 1;
               }
 
@@ -294,7 +282,8 @@ function deleteEventbySPK(dentry,spk){
         }
     }
     catch(e){
-      console.error('Error found: '+e);
+      console.error('Error catched: EVENT NOT FOUND - '+e);
+      return 0;
     }
 
    
