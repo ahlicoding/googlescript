@@ -2,7 +2,7 @@
 // https://developers.google.com/apps-script/guides/triggers/installable
 // https://developers.google.com/apps-script/reference/script/spreadsheet-trigger-builder
 
-var calendar_id = '{Your Calendar ID here}';
+var calendar_id = '{Your Calendar ID}';
 
 // tentukan jam berapa kalender update tiap hari, kalo jam 7 maka tulis 7 , jam 8 tulis 8, dst...
 var update_time = 2 ;
@@ -50,10 +50,12 @@ function calendarEvent(e){
   let sheet = SpreadsheetApp.getActiveSheet();
 
   var setting_range = sheet.getRange(auto_row,auto_col);
-  var setting_auto = setting_range.getValue();
+ // var setting_auto = setting_range.getValue();
+ var setting_auto = 1 ;
 
   var setting_range = sheet.getRange(run_row,run_col);
-  var setting_value = setting_range.getValue();
+  // var setting_value = setting_range.getValue();
+  var setting_value = 1;
 
   if (setting_value != '1'){
      console.log('OFF Calendar'); 
